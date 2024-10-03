@@ -6,6 +6,34 @@
     <title>Gearbr.AIn</title>
     <link rel="stylesheet" href="styles.css">
     <script src="scripts.js" defer></script>
+    <style>
+        /* Estilos simples para el formulario */
+        #question-widget {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        #question-widget input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #question-widget button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #question-widget button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -44,8 +72,47 @@
         <p>Actualmente estamos trabajando en nuestra página web. ¡Vuelve pronto!</p>
     </section>
 
+    <!-- Widget para enviar preguntas -->
+    <section id="question-widget">
+        <h2>Haz una pregunta</h2>
+        <form id="formQuestion">
+            <input type="text" id="inputQuestion" placeholder="Escribe tu pregunta aquí..." required>
+            <button type="submit">Enviar</button>
+        </form>
+        <p id="responseMessage"></p>
+    </section>
+
     <footer>
         <p>&copy; 2024 Gearbrain</p>
     </footer>
+
+    <script>
+        document.getElementById('formQuestion').addEventListener('submit', function (e) {
+            e.preventDefault(); // Evita que el formulario se envíe de forma tradicional
+
+            const question = document.getElementById('inputQuestion').value;
+
+            // Reemplaza con la URL de tu Webhook de n8n
+            const webhookUrl = 'http://localhost:5678/webhook-test/f0cb2b32-390e-475d-b267-b5bb3c395f0c/chatbot';
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question: question }), // Envía la pregunta en formato JSON
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Respuesta de n8n:', data);
+                document.getElementById('responseMessage').innerText = 'Pregunta enviada con éxito!';
+                document.getElementById('inputQuestion').value = ''; // Limpia el campo de entrada
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('responseMessage').innerText = 'Hubo un problema al enviar la pregunta.';
+            });
+        });
+    </script>
 </body>
 </html>
